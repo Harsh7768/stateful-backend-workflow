@@ -1,5 +1,5 @@
-import os
 import psycopg
+import os
 
 def get_connection():
-    return psycopg.connect(os.environ["DATABASE_URL"])
+    return psycopg.connect(os.getenv("DATABASE_URL"))
