@@ -78,16 +78,21 @@ def create_user(user: UserCreate):
     conn = get_connection()
     cur = conn.cursor()
 
-    cur.execute(
-        "INSERT INTO users (email) VALUES (%s) RETURNING id;",
-        [user.email]
-    )
+    try:
+        cur.execute(
+            "INSERT INTO users (email) VALUES (%s) RETURNING id;",
+            [user.email]
+        )
+        user_id = cur.fetchone()[0]
+        conn.commit()
 
-    user_id = cur.fetchone()[0]
+    except Exception as e:
+        conn.rollback()
+        raise HTTPException(status_code=400, detail="User already exists")
 
-    conn.commit()
-    cur.close()
-    conn.close()
+    finally:
+        cur.close()
+        conn.close()
 
     return {"id": user_id, "email": user.email}
 
