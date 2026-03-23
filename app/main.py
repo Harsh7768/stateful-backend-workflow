@@ -72,6 +72,7 @@ def db_check():
 
 
 # Create a new user in the database
+
 @app.post("/users")
 def create_user(user: UserCreate):
     conn = get_connection()
@@ -79,12 +80,12 @@ def create_user(user: UserCreate):
 
     cur.execute(
         "INSERT INTO users (email) VALUES (%s) RETURNING id;",
-        (user.email,)
+        [user.email]
     )
 
     user_id = cur.fetchone()[0]
-    conn.commit()
 
+    conn.commit()
     cur.close()
     conn.close()
 
